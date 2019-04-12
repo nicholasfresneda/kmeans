@@ -3,7 +3,7 @@
 #include <string>
 #include <ctime>
 #include <vector>
-#include "Coord.hpp"
+#include "Cluster.hpp"
 
 using namespace std;
 
@@ -36,11 +36,11 @@ int main(int argc, char* argv[])
 
     //initialize k clusters
     srand(time(NULL));
-    vector<Coord> *inputData = new vector<Coord>();
-    vector<Cluster> kClusters;
+    unordered_map<Coord, int> *clusterInit = new unordered_map<Coord,int>();
+    vector<Coord> kClusters;
     for(int i = 0; i < K_SZ; i++)
     {
-        Cluster newCluster(rand() % 100, rand() % 100);
+        Coord newCoord(rand() % 100, rand() % 100);
         kClusters.push_back(newCluster);
     }
 
@@ -53,17 +53,19 @@ int main(int argc, char* argv[])
         int yVal = rand() % 100;
 
         //initialize all coordinates with random cluster (will be set later)
-        Coord newCoord(xVal, yVal, kClusters[rand() % K_SZ]);
-        inputData->push_back(newCoord);
+        Coord newCoord(xVal, yVal);
+        //clusterInit kClusters[rand() % K_SZ]
         myfile << xVal << "\t" << yVal <<endl;
     }
+
+    Cluster cluster(clusterInit, kClusters);
     myfile.close();
 
     //main loop 
     for (int i = 0; i < ITER; i++)
     {
-        updateClusters(inputData, kClusters);
-        writeToData(i, inputData);    
+        cluster.updateClusters(inputData, kClusters);
+        cluster.writeToDatafile(i);    
     }
 
     delete[] inputData;
