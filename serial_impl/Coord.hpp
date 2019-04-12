@@ -3,6 +3,7 @@ using namespace std;
 
 
 class Cluster {
+    public:
     int xVal;
     int yVal;
     Cluster(int xVal, int yVal);
@@ -10,14 +11,14 @@ class Cluster {
 };
 
 class Coord {
-
 private:
     int xVal;
     int yVal;
-    int cluster;
+    int nearestCluster;
+    int getEuclideanDistance(Cluster cluster);
 
 public:
     Coord(int xVal, int yVal, int cluster);
     int getCluster();
-    void updateCluster(vector<Cluster> newClusters);
+    void updateCentroid(vector<Cluster> newClusters);
 };
