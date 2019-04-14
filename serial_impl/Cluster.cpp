@@ -31,6 +31,7 @@ Cluster::Cluster(vector<pair<Coord, int>> coordPairs, vector<Coord> kClusters) :
 {
     this->coordPairs = coordPairs;
     this->kClusters = kClusters;
+    converged = false;
     colorMap.insert(make_pair(-1, "black"));
     colorMap.insert(make_pair(0, "red"));
     colorMap.insert(make_pair(1, "blue"));
@@ -109,6 +110,9 @@ void Cluster::updateClusterCoords()
 {
     //iterate through k cluster vec
     //update cluster with average of each point in maps 
+    
+    //copy cluster to compare for later
+    vector<Coord> copyCluster = kClusters;
     for (unsigned int i = 0; i < kClusters.size(); i++)
     {
         int sumX = 0;
@@ -122,8 +126,22 @@ void Cluster::updateClusterCoords()
             }
             
         }
+
         Coord newCoord(sumX / coordPairs.size(), sumY / coordPairs.size());
         kClusters[i] = newCoord;
     }
+    
+    bool converged = true;
+    for (unsigned int i = 0; i < kClusters.size(); i++)
+    {
+        if (copyCluster.at(i).getX() != kClusters.at(i).getX()
+         && copyCluster.at(i).getY() != kClusters.at(i).getY())
+        {
+            converged = false;
+            break;
+        }
+    }
+
+    this->converged = converged;
 }
 

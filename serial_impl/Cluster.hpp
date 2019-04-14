@@ -28,10 +28,12 @@ private:
     void updateClusterCoords();
     unordered_map<int, string> colorMap;
     
+    
 public:
     Cluster(vector<pair<Coord, int>> clusterInit, vector<Coord> kClusters);
     void updateClusters();
     void writeToDatafile(int fileNum);
+    bool converged;
     ~Cluster();
 
 

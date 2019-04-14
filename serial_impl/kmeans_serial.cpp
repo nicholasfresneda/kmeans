@@ -11,7 +11,7 @@ using namespace std;
 #define COL_SZ 2
 #define REQ_ARGS 4
 #define MAX_K 6
-#define MAX_PT 500
+#define MAX_PT 800
 static int K_SZ;
 static int ITER;
 static int NUM_PTS;
@@ -70,6 +70,10 @@ int main(int argc, char* argv[])
     {
         cluster.updateClusters();
         cluster.writeToDatafile(i);    
+        if (cluster.converged)
+        {
+            break;
+        }
     }
 
 }

@@ -1,6 +1,12 @@
 set palette model RGB maxcolors 10 
 set palette model RGB defined ( -1 "#FE0000", 0 "#0000FE", 1 "#5600E2", 2 "#6C5EE2", 3 "#00FEFE", 4 "#80FE96", 5 "#00FE00", 6 "#FEFE00", 7 "#FEA820", 8 "#FE74FE") 
 set terminal png
-set output 'file.png' 
-plot "data7.dat" u 1:2:3 w points pt 5 ps 1 palette, \
-     "data7a.dat" u 1:2:3 with circles palette 
+do for [i=0:5] {
+    output_file = sprintf('file%d.png', i)
+    data = sprintf('data%d.dat', i)
+    k = sprintf('data%da.dat', i)
+    set output output_file
+    plot data u 1:2:3 w points pt 5 ps 1 palette, \
+    k u 1:2:3 with circles palette 
+}
+
