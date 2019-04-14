@@ -1,36 +1,41 @@
-#include <vector>
-#include <hashmap>
+#ifndef CLUSTER_H
+#define CLUSTER_H
 
+#include <vector>
+#include <unordered_map>
+#include <string>
 using namespace std;
 
 
-class Coord 
-{
+class Coord {
 private:
     int x;
     int y;
-    int getEuclideanDistance(Coord coord);
 
 public:
     Coord(int xVal, int yVal);
     int getX();
-    int getY()
+    int getY();
+    int getEuclideanDistance(Coord coord);
+
 };
 
-class Cluster 
-{
+class Cluster {
 private:
-    unordered_map<Coord, int> *clusterMap;
+    vector<pair<Coord, int>> coordPairs;
     std::vector<Coord> kClusters;
     void updateCoordMap();
     void updateClusterCoords();
+    unordered_map<int, string> colorMap;
     
 public:
-    Cluster(unordered_map<Coord, int> *clusterMap, vector<Coord> kClusters);
+    Cluster(vector<pair<Coord, int>> clusterInit, vector<Coord> kClusters);
     void updateClusters();
     void writeToDatafile(int fileNum);
     ~Cluster();
 
 
 };
+
+#endif
 
