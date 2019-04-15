@@ -6,7 +6,7 @@
 #include "Cluster.hpp"
 #include <unordered_map>
 #include <ctime>
- 
+
 using namespace  std;
 
 #define COL_SZ 2
@@ -15,7 +15,7 @@ using namespace  std;
 #define MAX_PT 800
 static int K_SZ;
 static int ITER;
-static int NUM_PTS;
+static long NUM_PTS;
 
 
 void processInputs(int argc, char* argv[])
@@ -42,32 +42,7 @@ int main(int argc, char* argv[])
     //initialize inputs
     processInputs(argc, argv);
 
-    //initialize k clusters
-    srand(time(NULL));
-    vector<pair<Coord, int>> clusterInit;
-    vector<Coord> kClusters;
-    for(int i = 0; i < K_SZ; i++)
-    {
-        Coord newCoord(rand() % MAX_PT, rand() % MAX_PT);
-        kClusters.push_back(newCoord);
-    }
-
-    //initialize coordinates and write to data file
-    for (int i = 0; i < NUM_PTS; i++)
-    {
-        int xVal = rand() % MAX_PT;
-        int yVal = rand() % MAX_PT;
-
-        //initialize all coordinates with zero as cluster (will be set later)
-        Coord newCoord(xVal, yVal);
-        // pair<Coord, int> newMapVal(newCoord, 0);
-        clusterInit.push_back(std::make_pair(newCoord, 0));
-    }
-
-    Cluster cluster(clusterInit, kClusters);
-    clock_t start, end;
-    double cpu_time;
-    start = clock();
+    Cluster cluster(K_SZ, NUM_PTS);
     //main loop 
     for (int i = 0; i < ITER; i++)
     {
@@ -79,9 +54,5 @@ int main(int argc, char* argv[])
             break;
         }
     }
-    
-    end = clock();
-    cpu_time = (double)(end - start);
-    cout <<"Kmeans time " << cpu_time / CLOCKS_PER_SEC <<endl;
 
 }

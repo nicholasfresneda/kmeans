@@ -3,6 +3,8 @@
 #include <fstream>
 #include <string>
 #include <iostream>
+#include <omp.h>
+
 using namespace std;
 
 Coord::Coord(int xVal, int yVal)
@@ -79,9 +81,10 @@ void Cluster::updateCoordMap()
 {
     //iterate through map
     //calculate closest cluster for each coordinate and update k num in map
+    #pragma omp parallel for 
     for(unsigned int i = 0; i < coordPairs.size(); i++)
     {
-        Coord coord = coordPairs.at(i).first;
+        Coord coord = coordPairs[i].first;
         int minDist = coord.getEuclideanDistance(kClusters.at(0));
         int count = 0;
         int index = 0;
@@ -97,7 +100,7 @@ void Cluster::updateCoordMap()
             count++;
         }
 
-        coordPairs.at(i).second = index;
+        coordPairs[i].second = index;
     }
 
 }
@@ -109,6 +112,7 @@ void Cluster::updateClusterCoords()
     
     //copy cluster to compare for later
     vector<Coord> copyCluster = kClusters;
+    #pragma omp parallel for
     for (unsigned int i = 0; i < kClusters.size(); i++)
     {
         int sumX = 0;
@@ -116,11 +120,11 @@ void Cluster::updateClusterCoords()
         int count = 0;
         for (unsigned int j = 0; j < coordPairs.size(); j++)
         {
-            if ((unsigned int) coordPairs.at(j).second == i)
+            if ((unsigned int) coordPairs[j].second == i)
             {
                 count++;
-                sumX += coordPairs.at(j).first.getX();
-                sumY += coordPairs.at(j).first.getY();
+                sumX += coordPairs[j].first.getX();
+                sumY += coordPairs[j].first.getY();
             }
         }
 
