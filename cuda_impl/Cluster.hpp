@@ -16,6 +16,11 @@ private:
     int* clusterYVals;
     int kSize;
     long coordSize;
+    int* d_coordXVals;
+    int* d_coordYVals;
+    int* d_coordKMaps;
+    int* d_clusterXVals;
+    int* d_clusterYVals;
 public:
     Cluster(int kSize, long coordSize);
     void updateCoordMap();

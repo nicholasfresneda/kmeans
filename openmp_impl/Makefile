@@ -16,5 +16,5 @@ $(EXECUTABLE): $(OBJECTS)
 .PHONY: clean
 
 clean:
-	rm -rf *.o *.png kmeans_serial *.dat
+	rm -rf *.o *.png kmeans_omp *.dat
 

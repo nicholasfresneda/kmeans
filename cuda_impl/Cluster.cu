@@ -46,11 +46,11 @@ Cluster::Cluster(int kSize, long coordSize)
     this->kSize = kSize;
     this->coordSize = coordSize;
     //allocate and initialize member variables
-    coordXVals = new int(coordSize);
-    coordYVals = new int(coordSize);
-    coordKMaps = new int(coordSize);
-    clusterXVals = new int(kSize);
-    clusterYVals = new int(kSize);
+    coordXVals = (int*)malloc(coordSize * sizeof(int));
+    coordYVals = (int*)malloc(coordSize * sizeof(int));
+    coordKMaps = (int*)malloc(coordSize * sizeof(int));
+    clusterXVals = (int*)malloc(kSize * sizeof(int));
+    clusterYVals = (int*)malloc(kSize * sizeof(int));
 }
 
 Cluster::~Cluster()
@@ -93,11 +93,11 @@ void Cluster::updateCoordMap()
 
     if (firstTime)
     {
-        cudaMallocManaged(&coordXVals, sizeof(int) * coordSize);
-        cudaMallocManaged(&coordYVals, sizeof(int) * coordSize);
-        cudaMallocManaged(&coordKMaps, sizeof(int) * coordSize);
-        cudaMallocManaged(&clusterXVals, sizeof(int) * kSize);
-        cudaMallocManaged(&clusterYVals, sizeof(int) * kSize);
+        cudaMalloc(&d_coordXVals, sizeof(int) * coordSize);
+        cudaMalloc(&d_coordYVals, sizeof(int) * coordSize);
+        cudaMalloc(&d_coordKMaps, sizeof(int) * coordSize);
+        cudaMalloc(&d_clusterXVals, sizeof(int) * kSize);
+        cudaMalloc(&d_clusterYVals, sizeof(int) * kSize);
         firstTime = 0;
         srand(time(NULL));
         for (int i = 0; i < coordSize; i++)
@@ -106,7 +106,7 @@ void Cluster::updateCoordMap()
             coordYVals[i] = rand() % MAX_PT;
             
             //set k cluster for each coord to 0, will be changed later
-            coordKMaps[i] = 0;
+            coordKMaps[i] = 2;
         }
 
         for(int i = 0; i < kSize; i++)
@@ -114,15 +114,24 @@ void Cluster::updateCoordMap()
             clusterXVals[i] = rand() % MAX_PT;
             clusterYVals[i] = rand() % MAX_PT;
         }
-    }
-    
 
-    int blockSize = 256;
+        cudaMemcpy(d_coordXVals, coordXVals, coordSize * sizeof(int), cudaMemcpyHostToDevice);
+        cudaMemcpy(d_coordYVals, coordYVals, coordSize * sizeof(int), cudaMemcpyHostToDevice);
+        cudaMemcpy(d_coordKMaps, coordKMaps, coordSize * sizeof(int), cudaMemcpyHostToDevice);
+    }
+
+    cudaMemcpy(d_clusterXVals, clusterXVals, kSize * sizeof(int), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_clusterYVals, clusterYVals, kSize * sizeof(int), cudaMemcpyHostToDevice);
+
+    int blockSize = 512;
     int numBlocks = (coordSize + blockSize - 1) / blockSize;
-    updateCoordKernel<<<numBlocks, blockSize>>>(coordSize, coordXVals, coordYVals,
-                                            clusterXVals, clusterYVals, kSize, coordKMaps);
+    updateCoordKernel<<<numBlocks, blockSize>>>(coordSize, d_coordXVals, d_coordYVals,
+                                            d_clusterXVals, d_clusterYVals, kSize, d_coordKMaps);
 
     cudaDeviceSynchronize();
+    cudaMemcpy(coordKMaps, d_coordKMaps, coordSize * sizeof(int), cudaMemcpyDeviceToHost);
+
+
 }
 
 void Cluster::updateClusterCoords()

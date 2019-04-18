@@ -1,6 +1,6 @@
 CC=g++
 NVCC = nvcc
-CFLAGS=-g -std=c++11 
+CFLAGS=-O3 -std=c++11 
 LDFLAGS= 
 SOURCES=kmeans_cuda.cpp Cluster.cu
 OBJECTS=kmeans_cuda.o Cluster.o
@@ -21,5 +21,5 @@ Cluster.o: Cluster.cu
 .PHONY: clean
 
 clean:
-	rm -rf *.o *.png kmeans_serial *.dat
+	rm -rf *.o *.png kmeans_cuda *.dat
 
